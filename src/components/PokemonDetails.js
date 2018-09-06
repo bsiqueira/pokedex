@@ -26,7 +26,7 @@ export default (props) => {
             <PokemonInfoHeader>Base Stats</PokemonInfoHeader>
             {pokemon.stats.map(stat => {
               return <Column key={stat.stat.name}>
-                <PokemonInfo margin='10px 0'>{toTitleCase(stat.stat.name)}</PokemonInfo>
+                <PokemonInfo margin='10px 0'>{toTitleCase(stat.stat.name).replace('-', ' ')}</PokemonInfo>
                 <Line strokeWidth='2' trailWidth='1' strokeColor='#4A5D3E' percent={stat.base_stat / maxStatMapping[stat.stat.name] * 100} />
               </Column>
             }
