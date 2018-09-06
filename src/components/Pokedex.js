@@ -1,11 +1,10 @@
 import React, {Component} from 'react'
 import { get } from 'superagent'
-import PokemonPage from './PokemonPage'
-import { Header, Column, Row, StyledSelect, PokemonCard } from './StyledComponents'
+import PokemonPage from './PokemonDetails'
+import { Header, Column, Row, StyledSelect, PokemonCard, PokemonGrid, Span } from './StyledComponents'
 import { toTitleCase } from '../utils'
-import { SpringGrid, makeResponsive } from 'react-stonecutter'
-
-const Grid = makeResponsive(SpringGrid, { maxWidth: 1820 })
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSpinner } from '@fortawesome/free-solid-svg-icons'
 
 // Won't be using any kind of state management, app is just too simple for it
 export default class Pokedex extends Component {
@@ -16,6 +15,7 @@ export default class Pokedex extends Component {
       pokemonOptions: [],
       selectedPokemon: null,
       pokemonSearchValue: '',
+      fetchingPokemon: '',
     }
   }
   
@@ -32,7 +32,12 @@ export default class Pokedex extends Component {
     })
   }
   
-  handleClickPokemon = (id) => fetchPokemon(id).then(result => this.setState({selectedPokemon: result}))
+  handleClickPokemon = (id) => () => {
+    this.setState({fetchingPokemon: id})
+    fetchPokemon(id).then(result => this.setState({selectedPokemon: result, fetchingPokemon: ''}))
+  }
+
+  clearSelectedPokemon = () => this.setState({selectedPokemon: null})
 
   handleInputSearchPokemon = (pokemonSearchValue) => this.setState({pokemonSearchValue})
 
@@ -40,21 +45,21 @@ export default class Pokedex extends Component {
   
  
   render = () => {
-    const { selectedPokemon, pokemons, pokemonOptions, pokemonSearchValue } = this.state
-    console.log(pokemonSearchValue)
+    const { selectedPokemon, pokemons, pokemonOptions, pokemonSearchValue, fetchingPokemon } = this.state
     // On a bigger application this should be handled with a router, and when loading the page with the selected id as the route param the respective api calls would be made
     return (
-      <Column background='#e1e1ea'>
+      <Column>
         <Header>Pokédex</Header>
       {selectedPokemon ?
-        <PokemonPage /> :
+        <PokemonPage pokemon={selectedPokemon} clearSelectedPokemon={this.clearSelectedPokemon} /> :
         <PokedexSearchableGrid 
           pokemons={pokemons}
           pokemonOptions={pokemonOptions}
-          handleSelectPokemon={this.handleClickPokemon}
+          handleClickPokemon={this.handleClickPokemon}
           handleSearchPokemon={this.handleSearchPokemon}
           handleInputSearchPokemon={this.handleInputSearchPokemon}
           pokemonSearchValue={pokemonSearchValue}
+          fetchingPokemon={fetchingPokemon}
         />
       }
       </Column>
@@ -64,10 +69,9 @@ export default class Pokedex extends Component {
 
 {/*This would normally be a pure component to be wrapped around specific use cases.*/}
 const PokedexSearchableGrid = (props) => {
-  const { pokemons, pokemonOptions, handleSelectPokemon, handleSearchPokemon, handleInputSearchPokemon, pokemonSearchValue } = props
-  console.log(pokemonSearchValue)
+  const { pokemons, pokemonOptions, handleClickPokemon, handleSearchPokemon, handleInputSearchPokemon, pokemonSearchValue, fetchingPokemon } = props
   return (
-    <Column padding='0 20px'>
+    <Column animate>
       <StyledSelect 
         placeholder='Search for a pokémon'
         options={pokemonOptions}
@@ -76,10 +80,9 @@ const PokedexSearchableGrid = (props) => {
         inputValue={pokemonSearchValue}
         searchable={false}
       />
-      <Grid
+      <PokemonGrid
         component="ul"
-        columns={6}
-        columnWidth={150}
+        columnWidth={160}
         gutterWidth={15}
         gutterHeight={15}
         itemHeight={180}
@@ -90,21 +93,19 @@ const PokedexSearchableGrid = (props) => {
           pokemons.filter(pokemon => pokemon.name.toLowerCase().includes(pokemonSearchValue.toLowerCase())).map(pokemon => {
             return (
               <div key={pokemon.name} itemHeight={180}>
-                <PokemonCard>
-                  {/* I admit that I kind of cheated on this one. I couldn't hot link all the images from their API, 
-                so I'd either have to setup a server to download and cache them, or just take their pngs instead. */}
-                  <img src={`images/pokemonSprites/${pokemon.id}.png`} alt={pokemon.name} />
-                  <div>{pokemon.name}</div>
+                <PokemonCard onClick={handleClickPokemon(pokemon.id)}>
+                  <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`} alt={pokemon.name} />
+                  <div>{pokemon.name}{fetchingPokemon === pokemon.id && <Span margin='0 0 0 10px'><FontAwesomeIcon icon={faSpinner} spin /></Span>}</div>
                 </PokemonCard>
               </div>
             )
           })
         }
-      </Grid>
+      </PokemonGrid>
     </Column>
   )
 }
 // Generally wouldn't be making API calls inside components, but since this is just a small app using vanilla React we can get away with it.
 // There is a point to make about using a static data source for this, since it's the kind of data that's not prone to changes. Will only use the API for demonstration purposes.
 const fetchPokemons = () => get('https://pokeapi.co/api/v2/pokemon').query({limit: 151}).then(res => res.body.results).catch(err => console.log(err))
-const fetchPokemon = (id) => get(`http://pokeapi.co/api/v2/pokemon/${id}`).then(res => res.body).catch(err => console.log(err))
+const fetchPokemon = (id) => get(`https://pokeapi.co/api/v2/pokemon/${id}`).then(res => res.body).catch(err => console.log(err))
