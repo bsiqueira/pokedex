@@ -5,6 +5,7 @@ import { Header, Column, StyledSelect, PokemonCard, PokemonGrid, Span } from './
 import { toTitleCase } from '../utils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner } from '@fortawesome/free-solid-svg-icons'
+import 'react-select/dist/react-select.css';
 
 // Won't be using any kind of state management, app is just too simple for it
 export default class Pokedex extends Component {
@@ -67,7 +68,7 @@ export default class Pokedex extends Component {
   }
 }
 
-{/*This would normally be a pure component to be wrapped around specific use cases.*/}
+// This would normally be a pure component to be wrapped around specific use cases
 const PokedexSearchableGrid = (props) => {
   const { pokemons, pokemonOptions, handleClickPokemon, handleSearchPokemon, handleInputSearchPokemon, pokemonSearchValue, fetchingPokemon } = props
   return (
@@ -78,9 +79,8 @@ const PokedexSearchableGrid = (props) => {
         onChange={handleSearchPokemon}
         onInputChange={handleInputSearchPokemon}
         inputValue={pokemonSearchValue}
-        defaultInputValue={pokemonSearchValue}
-        blurInputOnSelect={false}
-        onInputBlur={() => {}}
+        onBlurResetsInput={false}
+        onBlur={() => {}}
       />
       <PokemonGrid
         component="ul"
@@ -88,7 +88,8 @@ const PokedexSearchableGrid = (props) => {
         gutterWidth={15}
         gutterHeight={15}
         itemHeight={180}
-        springConfig={{ stiffness: 170, damping: 26 }}
+        duration={500}
+        easing="ease-out"
       >
         {
           /**This should really not be done in a higher load scenario. On the fly filtering should be memoized through something like reselect */

@@ -9,17 +9,17 @@ export default (props) => {
   const { clearSelectedPokemon, pokemon } = props
   console.log(props)
   return (
-    <Column>
+    <Column padding='0 20px'>
       <ReturnToPage onClick={clearSelectedPokemon}><FontAwesomeIcon icon={faArrowLeft} />&nbsp;Return to Pokedéx</ReturnToPage>
       <PokemonDetailsContainer>
         <Row justifyContent='space-between'>
           <Column width='40%'>
             <PokemonInfoHeader margin='0 0 0 20px' alignSelf='left'>{toTitleCase(pokemon.name)}</PokemonInfoHeader>
-            <img width='156px' height='156px' src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`} />
+            <img width='156px' height='156px' src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`} alt={pokemon.name} />
             <PokemonInfo margin='0 0 0 20px'>Pokémon ID #{pokemon.id}</PokemonInfo>
             <Column margin='30px 0 0 0'>
               <PokemonInfoHeader>Shiny</PokemonInfoHeader>              
-              <img width='156px' height='156px' src={pokemon.sprites.front_shiny} />
+              <img width='156px' height='156px' src={pokemon.sprites.front_shiny} alt={`shiny_${pokemon.name}`}/>
             </Column> 
           </Column>
           <Column>

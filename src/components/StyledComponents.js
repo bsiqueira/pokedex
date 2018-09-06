@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 import Select from 'react-select'
-import { SpringGrid, makeResponsive } from 'react-stonecutter'
+import { CSSGrid, makeResponsive } from 'react-stonecutter'
 
-const Grid = makeResponsive(SpringGrid, { maxWidth: 1540 })
+const Grid = makeResponsive(CSSGrid, { maxWidth: 1540 })
 
 export const PokemonGrid = styled(Grid)`
   align-self: center;
