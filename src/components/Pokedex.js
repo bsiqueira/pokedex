@@ -5,7 +5,8 @@ import { Header, Column, StyledSelect, PokemonCard, PokemonGrid, Span } from './
 import { toTitleCase } from '../utils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner } from '@fortawesome/free-solid-svg-icons'
-import 'react-select/dist/react-select.css';
+import { easings } from 'react-stonecutter'
+import 'react-select/dist/react-select.css'
 
 // Won't be using any kind of state management, app is just too simple for it
 export default class Pokedex extends Component {
@@ -38,7 +39,7 @@ export default class Pokedex extends Component {
     fetchPokemon(id).then(result => this.setState({selectedPokemon: result, fetchingPokemon: ''}))
   }
 
-  clearSelectedPokemon = () => this.setState({selectedPokemon: null})
+  clearSelectedPokemon = () => this.setState({selectedPokemon: null, pokemonSearchValue: ''})
 
   handleInputSearchPokemon = (pokemonSearchValue) => this.setState({pokemonSearchValue})
 
@@ -88,8 +89,8 @@ const PokedexSearchableGrid = (props) => {
         gutterWidth={15}
         gutterHeight={15}
         itemHeight={180}
-        duration={500}
-        easing="ease-out"
+        duration={700}
+        easing={easings.easeInOut}
       >
         {
           /**This should really not be done in a higher load scenario. On the fly filtering should be memoized through something like reselect */
