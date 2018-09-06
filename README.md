@@ -10,4 +10,4 @@ Install dependencies: `yarn`<br>
 Start the server: `yarn start`<br><br>
 Access the web app through `http://localhost:3000`<br>
 
-Also available at: 
+Also available at: `https://musing-goldberg-dbcfe3.netlify.com`
