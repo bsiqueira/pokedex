@@ -27,13 +27,13 @@ export const StyledSelect = styled(Select)`
   margin: 10px;
   width: 50%;
   z-index: 10;
+  align-self: center;
 `
 
-export const PokemonCard = styled.div`
-  width: 100%;
-  height: 100%;
+export const PokemonCard = styled(Column)`
   padding: 10px;
   background: #a1a39e;
   color: #ffffff;
   cursor: pointer;
+  align-items: center;
 `

@@ -3,7 +3,9 @@ import { get } from 'superagent'
 import PokemonPage from './PokemonPage'
 import { Header, Column, Row, StyledSelect, PokemonCard } from './StyledComponents'
 import { toTitleCase } from '../utils'
-import { SpringGrid } from 'react-stonecutter'
+import { SpringGrid, makeResponsive } from 'react-stonecutter'
+
+const Grid = makeResponsive(SpringGrid, { maxWidth: 1820 })
 
 // Won't be using any kind of state management, app is just too simple for it
 export default class Pokedex extends Component {
@@ -22,16 +24,20 @@ export default class Pokedex extends Component {
       this.setState({
         pokemons: pokemons.map(pokemon => ({
           ...pokemon,
-          name: toTitleCase(pokemon.name)
+          name: toTitleCase(pokemon.name),
+          id: pokemon.url.substr(0, pokemon.url.length - 1).split("/").pop()
         })),
-        pokemonOptions: pokemons.map(pokemon => ({label: pokemon.name, value: pokemon}))
+        pokemonOptions: pokemons.map(pokemon => ({label: toTitleCase(pokemon.name), value: pokemon}))
       })
     })
   }
   
   handleClickPokemon = (id) => fetchPokemon(id).then(result => this.setState({selectedPokemon: result}))
 
-  handleSearchPokemon = ({name}) => this.setState({pokemonSearchValue: name})
+  handleInputSearchPokemon = (pokemonSearchValue) => this.setState({pokemonSearchValue})
+
+  handleSearchPokemon = ({label}) => this.setState({pokemonSearchValue: label})
+  
  
   render = () => {
     const { selectedPokemon, pokemons, pokemonOptions, pokemonSearchValue } = this.state
@@ -45,8 +51,9 @@ export default class Pokedex extends Component {
         <PokedexSearchableGrid 
           pokemons={pokemons}
           pokemonOptions={pokemonOptions}
-          onSelectPokemon={this.handleClickPokemon}
-          onSearchPokemon={this.handleSearchPokemon}
+          handleSelectPokemon={this.handleClickPokemon}
+          handleSearchPokemon={this.handleSearchPokemon}
+          handleInputSearchPokemon={this.handleInputSearchPokemon}
           pokemonSearchValue={pokemonSearchValue}
         />
       }
@@ -57,37 +64,43 @@ export default class Pokedex extends Component {
 
 {/*This would normally be a pure component to be wrapped around specific use cases.*/}
 const PokedexSearchableGrid = (props) => {
-  const { pokemons, pokemonOptions, onSelectPokemon, onSearchPokemon, pokemonSearchValue } = props
+  const { pokemons, pokemonOptions, handleSelectPokemon, handleSearchPokemon, handleInputSearchPokemon, pokemonSearchValue } = props
+  console.log(pokemonSearchValue)
   return (
     <Column padding='0 20px'>
       <StyledSelect 
-        placeholder='Search for pokémons'
+        placeholder='Search for a pokémon'
         options={pokemonOptions}
-        onChange={onSearchPokemon}
-        value={pokemonSearchValue}
+        onChange={handleSearchPokemon}
+        onInputChange={handleInputSearchPokemon}
+        inputValue={pokemonSearchValue}
+        searchable={false}
       />
-      <SpringGrid
+      <Grid
         component="ul"
         columns={6}
         columnWidth={150}
         gutterWidth={15}
         gutterHeight={15}
-        itemHeight={200}
+        itemHeight={180}
         springConfig={{ stiffness: 170, damping: 26 }}
       >
         {
           /**This should really not be done in a higher load scenario. On the fly filtering should be memoized through something like reselect */
-          pokemons.filter(pokemon => pokemon.name.includes(pokemonSearchValue)).map(pokemon => {
+          pokemons.filter(pokemon => pokemon.name.toLowerCase().includes(pokemonSearchValue.toLowerCase())).map(pokemon => {
             return (
-              <div key={pokemon.name} itemHeight={180} itemWidth={130}>
+              <div key={pokemon.name} itemHeight={180}>
                 <PokemonCard>
-                  {pokemon.name}
+                  {/* I admit that I kind of cheated on this one. I couldn't hot link all the images from their API, 
+                so I'd either have to setup a server to download and cache them, or just take their pngs instead. */}
+                  <img src={`images/pokemonSprites/${pokemon.id}.png`} alt={pokemon.name} />
+                  <div>{pokemon.name}</div>
                 </PokemonCard>
               </div>
             )
           })
         }
-      </SpringGrid>
+      </Grid>
     </Column>
   )
 }
