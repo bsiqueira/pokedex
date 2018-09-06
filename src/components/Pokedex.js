@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import { get } from 'superagent'
 import PokemonPage from './PokemonDetails'
-import { Header, Column, Row, StyledSelect, PokemonCard, PokemonGrid, Span } from './StyledComponents'
+import { Header, Column, StyledSelect, PokemonCard, PokemonGrid, Span } from './StyledComponents'
 import { toTitleCase } from '../utils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner } from '@fortawesome/free-solid-svg-icons'
@@ -78,7 +78,9 @@ const PokedexSearchableGrid = (props) => {
         onChange={handleSearchPokemon}
         onInputChange={handleInputSearchPokemon}
         inputValue={pokemonSearchValue}
-        searchable={false}
+        defaultInputValue={pokemonSearchValue}
+        blurInputOnSelect={false}
+        onInputBlur={() => {}}
       />
       <PokemonGrid
         component="ul"

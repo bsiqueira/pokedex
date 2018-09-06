@@ -87,6 +87,9 @@ export const PokemonCard = styled(Column)`
   min-height: 150px;
   min-width: 130px;
   border: 1px solid black;
+  &:hover {
+    background: #3D403C;
+  }
 `
 
 export const PokemonDetailsContainer = styled(Column)`
