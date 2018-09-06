@@ -7,7 +7,6 @@ import { Line } from 'rc-progress'
 
 export default (props) => {
   const { clearSelectedPokemon, pokemon } = props
-  console.log(props)
   return (
     <Column padding='0 20px'>
       <ReturnToPage onClick={clearSelectedPokemon}><FontAwesomeIcon icon={faArrowLeft} />&nbsp;Return to Pokedéx</ReturnToPage>
